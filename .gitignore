@@ -1,0 +1,11 @@
+#.vscode/
+__pycache__/
+tensorboard_log/
+
+
+*.zip
+*.pyc
+*.png
+*.mp4
+*.gbc
+*.state
