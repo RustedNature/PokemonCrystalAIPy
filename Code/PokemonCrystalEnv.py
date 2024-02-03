@@ -160,7 +160,7 @@ class PokemonCrystalEnv(gym.Env):
         # Switch the red and blue channels
         image = image[:, :, ::-1]
 
-        plt.imsave(f"Files//{self.env_id}eval{self.step_count}.png", image, format="png")
+        plt.imsave(f"Files/temp_screenshots/{self.env_id}eval{self.step_count}.png", image, format="png")
         
     
     def get_uuid(self):
