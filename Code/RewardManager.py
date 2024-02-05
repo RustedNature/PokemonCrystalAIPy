@@ -3,14 +3,17 @@ from Code.Enums.MapBank import MapBank
 from Code.Enums.NeuborkiaMapNumber import NeuborkiaMapNumber
 from Code.MemoryAddresses import MemoryAddresses
 
+from Code.Logger import Logger
+
+logger = Logger().get_logger()
 
 class RewardManager:
-    def __init__(self):
+    def __init__(self, uuid):
         self.default_reward = 10.0
         self.max_pokemon_level = 100
         self.current_memory_values = None
         #self.last_images = []
-
+        self.uuid = uuid
         self.last_level_of_pokemon1 = 0
         self.current_level_of_pokemon1 = 0
         self.hp_of_pokemon1_byte1 = 0
@@ -82,24 +85,24 @@ class RewardManager:
         if self.current_map_bank == MapBank.Neuborkia.value and self.current_map_number == NeuborkiaMapNumber.Route29.value and not self.got_route_29_reward:
             self.reward += 10.0
             self.got_route_29_reward = True
-            print("Reward for Route 29")
+            self.log("Reward for Route 29")
 
     def outside_reward(self):
         if self.current_map_bank == MapBank.Neuborkia.value and self.current_map_number == NeuborkiaMapNumber.Outside.value and not self.got_outside_reward:
             self.reward += 10.0
             self.got_outside_reward = True
-            print("Reward for outside")
+            self.log("Reward for outside")
 
     def oak_lab_reward(self):
         if self.current_map_bank == MapBank.Neuborkia.value and self.current_map_number == NeuborkiaMapNumber.ProfHouse.value and not self.got_oak_reward:
             self.reward += 10.0
             self.got_oak_reward = True
-            print("Reward for Oak lab")
+            self.log("Reward for Oak lab")
     def mom_reward(self):
         if self.current_map_bank == MapBank.Neuborkia.value and self.current_map_number == NeuborkiaMapNumber.LivingRoom.value and (self.world_x == 8 or self.world_x == 9) and self.world_y == 4 and not self.got_mom_reward:
             self.reward += 10.0
             self.got_mom_reward = True
-            print("Reward for Mom")
+            self.log("Reward for Mom")
 
     def get_reward(self, last_button_pressed, image : np.ndarray, screen_in_hex):
         self.reward = 0.0
@@ -117,7 +120,7 @@ class RewardManager:
         if len(self.last_tile_maps) == 0:
             self.last_tile_maps.append(self.screen_in_hex)
             return
-        threshold = 0.1 * self.screen_in_hex.size
+        threshold = 0.20 * self.screen_in_hex.size
         # Compute the number of different tiles between the current tilemap and each previous tilemap
         differences = [np.sum(self.screen_in_hex != past_map) for past_map in self.last_tile_maps]
 
@@ -126,7 +129,7 @@ class RewardManager:
 
         if are_all_above_threshold:
             self.reward += 0.01
-            print("Reward for exploration")
+            self.log("Reward for exploration")
             self.last_tile_maps.append(self.screen_in_hex)
     
     def get_poitive_reward(self):
@@ -148,7 +151,7 @@ class RewardManager:
     #     if  is_different_image:
     #         self.last_images.append(self.current_image)
     #         self.reward += 0.01
-    #         print("Reward for exploration")
+    #         self.log("Reward for exploration")
             
  
     
@@ -179,56 +182,56 @@ class RewardManager:
         if self.current_level_of_pokemon1 > self.last_level_of_pokemon1 and self.current_level_of_pokemon1 < self.max_pokemon_level and self.number_of_pokemon_in_team == 1:
             if self.last_level_of_pokemon1 == 0:
                 self.reward += 10.0
-                print("Reward for pokemon 1 catch")
+                self.log("Reward for pokemon 1 catch")
             else:
                 self.reward += 0.5
-                print("Reward for pokemon 1 level up")
+                self.log("Reward for pokemon 1 level up")
             self.last_level_of_pokemon1 = self.current_level_of_pokemon1
         elif self.current_level_of_pokemon2 > self.last_level_of_pokemon2 and self.current_level_of_pokemon2 < self.max_pokemon_level and self.number_of_pokemon_in_team == 2:
             if self.last_level_of_pokemon2 == 0:
                 self.reward += 10.0
-                print("Reward for pokemon 2 catch")
+                self.log("Reward for pokemon 2 catch")
             else:
                 self.reward += 0.5
-                print("Reward for pokemon 2 level up")
+                self.log("Reward for pokemon 2 level up")
             self.last_level_of_pokemon2 = self.current_level_of_pokemon2
         elif self.current_level_of_pokemon3 > self.last_level_of_pokemon3 and self.current_level_of_pokemon3 < self.max_pokemon_level and self.number_of_pokemon_in_team == 3:
             if self.last_level_of_pokemon3 == 0:
                 self.reward += 10.0
-                print("Reward for pokemon 3 catch")
+                self.log("Reward for pokemon 3 catch")
             else:
                 self.reward += 0.5
-                print("Reward for pokemon 3 level up")
+                self.log("Reward for pokemon 3 level up")
             self.last_level_of_pokemon3 = self.current_level_of_pokemon3
         elif self.current_level_of_pokemon4 > self.last_level_of_pokemon4 and self.current_level_of_pokemon4 < self.max_pokemon_level and self.number_of_pokemon_in_team == 4:
             if self.last_level_of_pokemon4 == 0:
                 self.reward += 10.0
-                print("Reward for pokemon 4 catch")
+                self.log("Reward for pokemon 4 catch")
             else:
                 self.reward += 0.5
-                print("Reward for pokemon 4 level up")
+                self.log("Reward for pokemon 4 level up")
             self.last_level_of_pokemon4 = self.current_level_of_pokemon4
         elif self.current_level_of_pokemon5 > self.last_level_of_pokemon5 and self.current_level_of_pokemon5 < self.max_pokemon_level and self.number_of_pokemon_in_team == 5:
             if self.last_level_of_pokemon5 == 0:
                 self.reward += 10.0
-                print("Reward for pokemon 5 catch")
+                self.log(": Reward for pokemon 5 catch")
             else:
                 self.reward += 0.5
-                print("Reward for pokemon 5 level up")
+                self.log("Reward for pokemon 5 level up")
             self.last_level_of_pokemon5 = self.current_level_of_pokemon5
         elif self.current_level_of_pokemon6 > self.last_level_of_pokemon6 and self.current_level_of_pokemon6 < self.max_pokemon_level and self.number_of_pokemon_in_team == 6:
             if self.last_level_of_pokemon6 == 0:
                 self.reward += 10.0
-                print("Reward for pokemon 6 catch")
+                self.log("Reward for pokemon 6 catch")
             else:
                 self.reward += 0.5
-                print("Reward for pokemon 6 level up")
+                self.log("Reward for pokemon 6 level up")
             self.last_level_of_pokemon6 = self.current_level_of_pokemon6
 
     def get_penalty(self):
         if self.last_button_pressed == 6 or self.last_button_pressed == 7:
             self.reward -= 0.25
-            #print("Penalty for pressing start or select")
+            #self.log(self.uuid + ": Penalty for pressing start or select")
     
     def reset(self):
         #self.last_images.clear()
@@ -293,3 +296,6 @@ class RewardManager:
                 self.world_x = memval.memValue
             elif memval.memAddress == MemoryAddresses.WorldY:
                 self.world_y = memval.memValue
+
+    def log(self, message):
+        logger.info(str(self.uuid) + ": " + message)
