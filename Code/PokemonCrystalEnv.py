@@ -4,7 +4,6 @@ from gymnasium import  spaces
 import numpy as np
 from Code.MemoryAddresses import MemoryAddresses
 from Code.MemoryValue import MemoryValue
-from Code.MoveManager import MoveManager
 from Code.RewardManager import RewardManager
 
 from scipy.ndimage import zoom
@@ -18,6 +17,10 @@ from gymnasium import spaces
 from pyboy import PyBoy
 from pyboy.utils import WindowEvent
 
+from Code.Logger import Logger
+
+logger = Logger().get_logger()
+
 
 
 class PokemonCrystalEnv(gym.Env):
@@ -25,18 +28,17 @@ class PokemonCrystalEnv(gym.Env):
     def __init__(self, max_steps=2000, uuid=None):
         super(PokemonCrystalEnv, self).__init__()
         self.render_mode = 'train'
-        self.reward_manager = RewardManager()
         self.pyboy = PyBoy("Files./ROM/Pokemon - Kristall-Edition (Germany).gbc", window_type="headless")
         self.pyboy.set_emulation_speed(0)
         self.load_initial_state()
         self.is_episode_done = False
         self.step_count = 0
-        self.move_manager = MoveManager()
         self.max_steps = max_steps
         self.observation = np.zeros((1,58,64))
         self.reward = 0
         self.done = False
         self.env_id = uuid4()       
+        self.reward_manager = RewardManager(self.env_id)
         # Define action and observation space
         # They must be gym.spaces objects
         self.action_space = spaces.Discrete(8)
@@ -151,7 +153,7 @@ class PokemonCrystalEnv(gym.Env):
         self.is_episode_done = False
         self.step_count = 0
         self.release_buttons()
-        print("----------------------reset----------------------")
+        logger.info("reset")
         return self.observation, {}
     
     def render(self):
